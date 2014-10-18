@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ### Before you begin
@@ -17,12 +12,12 @@ Please ensure the R working directory is set to the location of the
 
 The following code will load the data as a data frame ("df").
 
-```{r}
+
+```r
 ### 1. Load the data
 
         df <- read.csv ("activity.csv"
                         , stringsAsFactors = FALSE) # factors removed
-
 ```
 
 
@@ -32,7 +27,8 @@ The following code will:
 
 2. Create a data frame with complete cases (no NAs) only ("dfComplete").
 
-```{r}
+
+```r
 ### 2. Process/transform the data (if necessary) into a format suitable for your analysis
 
         # Tranform "date"" column to date type
@@ -40,7 +36,6 @@ The following code will:
 
         # Create df data frame that drops rows where "steps" is NA
         dfComplete <- df[complete.cases(df), ]
-
 ```
 
 
@@ -56,24 +51,24 @@ The following code will:
 
 2. Sum the number of steps by day and interval.
 
-```{r}
+
+```r
         # Steps summed by date
         dfDay <- aggregate(df$steps ~ df$date, df, sum)
         colnames(dfDay) <- c("date", "steps")
-
 
         # Sum of steps per day aggregated by date and interval using complete cases
         library(plyr) # Load plyr library
         dfDayInt <- ddply(dfComplete, c("date", "interval")
                           , function(dfComplete)sum(dfComplete$steps))
         colnames(dfDayInt) <- c("date", "interval", "steps")
-
 ```
 
 
 The following code will make a histogram of the total number of steps taken each day.
 
-```{r}
+
+```r
 ### 1. Make a histogram of the total number of steps taken each day
 
         hist(dfDay$steps
@@ -81,13 +76,15 @@ The following code will make a histogram of the total number of steps taken each
              , main = "Total number of steps per day"
              , ylim = c(0, 30) # maximum freq at 30
              , xlab = "Total number of steps")
-
 ```
+
+![plot of chunk unnamed-chunk-4](./PA1_template_files/figure-html/unnamed-chunk-4.png) 
 
 
 The following code calculates the mean and median total number of steps taken per day.
 
-```{r}
+
+```r
 ### 2. Calculate and report the mean and median total number of steps taken per day
 
         # Mean of the total number of steps taken per day
@@ -98,13 +95,12 @@ The following code calculates the mean and median total number of steps taken pe
 
         # Default option changed to not display numerals in scientific notation
         options(scipen = 1, digits = 2)
-
 ```
 
 
-**The mean total number of steps taken per day is `r theMean`.**
+**The mean total number of steps taken per day is 10766.19.**
 
-**The median total number of steps taken per day is `r theMedian`.**
+**The median total number of steps taken per day is 10765.**
 
 **Thus, the mean and median number of daily steps are almost equal.**
 
@@ -114,7 +110,8 @@ The following code calculates the mean and median total number of steps taken pe
 
 The following code createa a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days.
 
-```{r}
+
+```r
 ### 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
         # Average steps across all days
@@ -130,22 +127,23 @@ The following code createa a time series plot of the 5-minute interval and the a
              , ylim = c(0, max(dfAve$steps))
              , xlab = "5-minute interval"
              , ylab = "Average number of steps")
-
 ```
+
+![plot of chunk unnamed-chunk-6](./PA1_template_files/figure-html/unnamed-chunk-6.png) 
 
 The following code determines which 5-minute interval averaged across all the days contains the maximum number of steps.
 
-```{r}
+
+```r
 ### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 # Maximum number of steps occurs at max(dfAve$steps)
 
         # 5-minute interval with the maximum number of steps        
         maxSteps <- dfAve[which(dfAve$steps == max(dfAve$steps)), 1]
-
 ```
 
-**The 5-minute interval with the maximum number of steps (on average across all the days) is `r maxSteps`.**
+**The 5-minute interval with the maximum number of steps (on average across all the days) is 835.**
 
 
 
@@ -153,7 +151,8 @@ The following code determines which 5-minute interval averaged across all the da
 
 The following code calculates the total number of missing values in the dataset.
 
-```{r}
+
+```r
 ### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 # The df data frame created above contains all cases.
@@ -161,15 +160,15 @@ The following code calculates the total number of missing values in the dataset.
 # The total number of rows with NAs is the difference between the number of rows of these two data frames.
 
         rowsNA <- nrow(df) - nrow(dfComplete)
-
 ```
 
-**The total number of missing values in the dataset is `r rowsNA`.**
+**The total number of missing values in the dataset is 2304.**
 
 
 The following code provides a strategy to fill in all of the missing values in the dataset. The mean steps for corresponding 5 minute sessions are used to replace and NA step values. 
 
-```{r}
+
+```r
 ### 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 ## Get the mean value for each 5 minute session
@@ -199,25 +198,25 @@ The following code provides a strategy to fill in all of the missing values in t
                         
                         }
                    }
-
 ```
 
 The following code creates a new dataset that is equal to the original dataset but with the missing data filled in.
 
 
-```{r}
+
+```r
 ### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 ## Create data frame with columns steps, date, interval
  
         dfFilled <- cbind.data.frame(dfMerge$steps, dfMerge$date, dfMerge$interval)
         colnames(dfFilled) <- c("steps", "date", "interval")
-
 ```
 
 The following code makes a histogram of the total number of steps taken each day. The mean and median total number of steps taken per day is calculated. 
 
-```{r}
+
+```r
 ### 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ## Steps summed by date using dfFilled
@@ -234,8 +233,11 @@ The following code makes a histogram of the total number of steps taken each day
                      , main = "Total number of steps per day with filled missing data"
                      , ylim = c(0, 35)
                      , xlab = "Total number of steps")
+```
 
+![plot of chunk unnamed-chunk-11](./PA1_template_files/figure-html/unnamed-chunk-11.png) 
 
+```r
 ## Mean and median total number of steps taken per day
 
                 # Mean of steps per day (date)
@@ -251,14 +253,13 @@ The following code makes a histogram of the total number of steps taken each day
                 colnames(dfFilledMM) <- c("date (YYYY/MM/DD)"
                                           , "Mean steps"
                                           , "Median steps")
-
 ```
 
 The following code assits to answer the questions regarding the mean/median number of steps calculated from the original dataset and the dataset with missing values filled in.
 
 
-```{r}
 
+```r
         # Steps summed by date using dfFilled data frame
         dfDayFilled <- aggregate(dfFilled$steps ~ dfFilled$date, dfFilled, sum)
         colnames(dfDayFilled) <- c("date", "steps")
@@ -271,7 +272,6 @@ The following code assits to answer the questions regarding the mean/median numb
 
         # Default option changed to not display numerals in scientific notation
         options(scipen = 1, digits = 2)
-
 ```
 
 #### Questions
@@ -282,9 +282,9 @@ The following code assits to answer the questions regarding the mean/median numb
 
 #### Answers
 
-**1. The mean total number of steps taken per day for complete cases versus imputing missing values is `r theMean` versus `r theMeanFilled`.**
+**1. The mean total number of steps taken per day for complete cases versus imputing missing values is 10766.19 versus 10766.19.**
 
-**The median total number of steps taken per day for complete cases versus imputing missing values is `r theMedian` versus `r theMedianFilled`.**
+**The median total number of steps taken per day for complete cases versus imputing missing values is 10765 versus 10766.19.**
 
 **Thus there is no difference in the mean value, and only a slight difference in the median value.**
 
@@ -297,8 +297,8 @@ The dataset with the filled-in missing values ("dfFilled" data frame) is used fo
 
 The following code creates a new factor variable in the dataset with two levels - "weekday" and "weekend".
 
-```{r}
 
+```r
 ### 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
         # Craete column with either "weekday"" or "weekend""
@@ -320,19 +320,18 @@ The following code creates a new factor variable in the dataset with two levels 
         
         # Bind to dfFilled data frame
         dfFinal <- cbind.data.frame(dfFilled, daysOfWeek)
-
-``` 
+```
 
 The following code makes a panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days.
 
-```{r}
+
+```r
 ### 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
  
         # Average steps across all days by intervals and daysOfWeek
         dfAveFinal <- ddply(dfFinal, c("interval", "daysOfWeek")
                             , function(dfFinal)mean(dfFinal$steps))
         colnames(dfAveFinal) <- c("interval", "daysOfWeek", "steps")
-
 
         # Time series of 5-minute interval and the average number of steps,
         # averaged across all days
@@ -347,5 +346,6 @@ The following code makes a panel plot containing a time series plot of the 5-min
                 # NOTE: the "+"" must be at end of each line
 
         print(p)
-
 ```
+
+![plot of chunk unnamed-chunk-14](./PA1_template_files/figure-html/unnamed-chunk-14.png) 
